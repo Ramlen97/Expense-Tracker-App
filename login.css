@@ -1,0 +1,38 @@
+body{ 
+    background-color:aqua;
+    background-repeat: no-repeat;
+    background-size: cover;            
+}
+
+form{
+    font-family: sans-serif;       
+    border:orange 2px solid;
+    border-radius: 25px;
+    width:max-content;
+    margin:auto;
+    background: ghostwhite;
+    padding: 35px;            
+}
+
+label{
+    font-size: large;
+}
+
+input{
+    width: 20rem;
+    height: 20px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: ridge;
+}
+
+button{
+    height: 25px;
+    font-size: medium;
+    padding: 5px;
+    background: orangered;
+    border:none;
+    border-radius: 5px;
+    color: white;
+    margin-top: 5px;
+}
