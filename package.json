@@ -1,0 +1,31 @@
+{
+  "name": "expense-tracker-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js",
+    "start-server": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/Ramlen97/Expense-Tracker-App.git"
+  },
+  "author": "Rameshwar Lenka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ramlen97/Expense-Tracker-App/issues"
+  },
+  "homepage": "https://github.com/Ramlen97/Expense-Tracker-App#readme",
+  "dependencies": {
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mysql2": "^3.0.1",
+    "sequelize": "^6.28.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
