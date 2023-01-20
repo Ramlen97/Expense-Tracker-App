@@ -1,5 +1,6 @@
 const path = require('path');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 exports.getUserSignup = (req, res, next) => {
     res.status(200).sendFile(path.join(path.dirname(process.mainModule.filename), 'views', 'signup.html'));
@@ -7,23 +8,22 @@ exports.getUserSignup = (req, res, next) => {
 
 exports.postUserSignup = async (req, res, next) => {
     const { name, email, password } = req.body;
-    console.log(req.body);
     if (!name || !email || !password) {
         return res.status(400).json('Something is missing! Please fill all the details to proceed');
     }
     try {
-        const users = await User.findAll({ where: { email: email } });
-        const user = users[0];
-        if (user) {
-            return res.status(400).json('User already exists. Kindly login.')
+        const user = await User.findAll({ where: { email: email } });
+        if (user[0]) {
+            return res.status(400).json('User already exists. Kindly login')
         }
-        await User.create({
-            name: name,
-            email: email,
-            password: password
+        const saltrounds = 10;
+        bcrypt.hash(password, saltrounds, async (err, hash) => {
+            console.log(err);
+            await User.create({ name, email, password: hash });
+            res.status(200).json('User is created succesfully');
         })
-        res.status(200).json('User is created succesfully');
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json('Error : Something went wrong');
     }
 }
@@ -35,17 +35,27 @@ exports.getUserLogin = (req, res, next) => {
 exports.postUserLogin = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return res.status(400).json('Kindly enter your email and password both to proceed');
+        return res.status(400).json('Kindly enter email and password both to proceed');
     }
     try {
-        const users = await User.findAll({ where: { email: email } });
-        const user = users[0];
-        if (!user) {
+        const user = await User.findAll({ where: { email: email } });
+        if (!user[0]) {
             return res.status(404).json("User not found");
         }
-        user.password === password? res.status(200).json('User login successfully '):res.status(401).json('Password is incorrect. Please try again!')
+        bcrypt.compare(password, user[0].password, (err, result) => {
+            if (err) {
+                res.status(500).json('Something went wrong. Please try again!');
+
+            }
+            if (result) {
+                res.status(200).json('User login successfully');
+            } else {
+                res.status(401).json('Password is incorrect. Please try again!');
+            }
+        })
+        // user.password === password ? res.status(200).json('User login successfully ') : res.status(401).json('Password is incorrect. Please try again!')
     } catch (error) {
-        res.status(400).json('Something went wrong. Please try again!');
-    } 
+        res.status(500).json('Something went wrong. Please try again!');
+    }
 }
 
