@@ -1,7 +1,12 @@
+*{
+    margin:0;
+    padding:0
+}
+
 body{ 
-    background-color:aqua;
-    background-repeat: no-repeat;
-    background-size: cover;            
+    margin:0;
+    padding:0;
+    background-color:hsl(184, 43%, 46%);           
 }
 
 form{
@@ -9,9 +14,9 @@ form{
     border:orange 2px solid;
     border-radius: 25px;
     width:max-content;
-    margin:auto;
     background: ghostwhite;
-    padding: 35px;            
+    padding: 25px; 
+    margin: 4rem 33rem;
 }
 
 label{
@@ -19,11 +24,11 @@ label{
 }
 
 input{
-    width: 20rem;
+    width: 16rem;
     height: 20px;
     margin-top: 3px;
     margin-bottom: 3px;
-    border: ridge;
+    border:ridge;
 }
 
 button{
@@ -35,4 +40,27 @@ button{
     border-radius: 5px;
     color: white;
     margin-top: 5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background-color: #aa0303;
+}
+
+a{
+    color:orangered;
+    font-size:large     
+}
+
+a:active,a:hover{
+    color:#aa0303;
+}
+
+h1{
+    font-family: sans-serif;
+    height: 3rem;
+    text-align: center;
+    padding: 5px;
+    color: rgb(82, 216, 221);
+    background:#6b2424
 }
