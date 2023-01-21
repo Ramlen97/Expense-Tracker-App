@@ -1,10 +1,5 @@
-const path = require('path');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
-
-exports.getUserSignup = (req, res, next) => {
-    res.status(200).sendFile(path.join(path.dirname(process.mainModule.filename), 'views', 'signup.html'));
-}
 
 exports.postUserSignup = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -20,16 +15,12 @@ exports.postUserSignup = async (req, res, next) => {
         bcrypt.hash(password, saltrounds, async (err, hash) => {
             console.log(err);
             await User.create({ name, email, password: hash });
-            res.status(200).json('User is created succesfully');
+            res.status(201).json('User is created succesfully');
         })
     }
     catch (error) {
         res.status(500).json('Error : Something went wrong');
     }
-}
-
-exports.getUserLogin = (req, res, next) => {
-    res.status(200).sendFile(path.join(path.dirname(process.mainModule.filename), 'views', 'login.html'));
 }
 
 exports.postUserLogin = async (req, res, next) => {
@@ -40,12 +31,11 @@ exports.postUserLogin = async (req, res, next) => {
     try {
         const user = await User.findAll({ where: { email: email } });
         if (!user[0]) {
-            return res.status(404).json("User not found");
+            return res.status(404).json("Sorry! User not found");
         }
         bcrypt.compare(password, user[0].password, (err, result) => {
             if (err) {
-                res.status(500).json('Something went wrong. Please try again!');
-
+                throw new Error('Something went wrong');
             }
             if (result) {
                 res.status(200).json('User login successfully');
@@ -53,9 +43,7 @@ exports.postUserLogin = async (req, res, next) => {
                 res.status(401).json('Password is incorrect. Please try again!');
             }
         })
-        // user.password === password ? res.status(200).json('User login successfully ') : res.status(401).json('Password is incorrect. Please try again!')
     } catch (error) {
         res.status(500).json('Something went wrong. Please try again!');
     }
 }
-

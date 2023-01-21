@@ -16,7 +16,7 @@ form{
     width:max-content;
     background: ghostwhite;
     padding: 25px; 
-    margin: 4rem 33rem;
+    margin: 1rem 33rem;
 }
 
 label{
@@ -63,4 +63,10 @@ h1{
     padding: 5px;
     color: rgb(82, 216, 221);
     background:#6b2424
+}
+
+h4{
+    font-family: sans-serif;
+    text-align: center;
+    color:#6b2424;
 }
