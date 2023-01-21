@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expenses</title>
+    <link rel="stylesheet" href="expense.css">
+</head>
+
+<body>
+    <h1>Day to Day Expenses</h1>
+
+    <form onsubmit="storeAndShowExpense(event)">
+        <label for="amount">Expense Amount</label>
+        <input type="number" id="amount" name="amount" placeholder="amount">
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" placeholder="describe here">
+        <label for="category">Choose a category</label>
+        <select id="category" name="category">
+            <option value="Fuel">Fuel</option>
+            <option value="Food">Food</option>
+            <option value="Grocery">Grocery</option>
+            <option value="Movie">Movie</option>
+            <option value="Bills">Bills</option>
+            <option value="Vacation">On Vacation</option>
+            <option value="Others">Others</option>
+        </select>
+        <input type="hidden" id="id" name="id" value="null">
+        <button type="submit">Add Expenses</button>
+    </form>
+
+    <ul></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
+    <script src="expense.js"></script>
+
+</body>
+
+</html>
