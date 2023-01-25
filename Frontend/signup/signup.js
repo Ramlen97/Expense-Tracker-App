@@ -9,11 +9,13 @@ async function signup(e){
         email:e.target.email.value,
         password:e.target.password.value
     }
-    console.log(signupDetails);
+    // console.log(signupDetails);
     try {
         const response= await axios.post('http://localhost:3000/user/signup',signupDetails);
         if (response.status===201){
-            alert(response.data);
+            console.log(response.data);
+            alert(response.data.message);
+            localStorage.setItem('token',response.data.token);
             window.location.href="../expense/expense.html";
         }
         

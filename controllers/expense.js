@@ -4,8 +4,9 @@ const Expense = require('../models/expense');
 
 exports.getExpenses = async (req, res, next) => {
     try {
-        const expenses = await Expense.findAll();
-        res.status(201).json(expenses);
+        // console.log(req.user);
+        const expenses = await req.user.getExpenses();
+        res.status(200).json(expenses);
     } catch (error) {
         res.status(504).json(error);
         console.log(error);
@@ -15,7 +16,7 @@ exports.getExpenses = async (req, res, next) => {
 exports.postAddExpense = async (req, res, next) => {
     try {
         const {amount,description,category}=req.body;
-        const exp = await Expense.create({amount,description,category});
+        const exp = await req.user.createExpense({amount,description,category});
         console.log(exp.dataValues);
         res.status(201).json(exp);
         console.log('expense added');

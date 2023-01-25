@@ -1,5 +1,11 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt=require('jsonwebtoken');
+
+function generateAccessToken(id){
+    console.log(id);
+    return jwt.sign({userId:id},'Sb9FHljJ67dcgT6Gl9PbOgSNI9LmZi1pUaoyfihjdxO3HeHQHl98oGg6yeJKoVE');
+}
 
 exports.postUserSignup = async (req, res, next) => {
     const { name, email, password } = req.body;
@@ -14,8 +20,8 @@ exports.postUserSignup = async (req, res, next) => {
         const saltrounds = 10;
         bcrypt.hash(password, saltrounds, async (err, hash) => {
             console.log(err);
-            await User.create({ name, email, password: hash });
-            res.status(201).json('User is created succesfully');
+            const user= await User.create({ name, email, password: hash });
+            res.status(201).json({message:'User created succesfully',token:generateAccessToken(user.id)});
         })
     }
     catch (error) {
@@ -38,7 +44,7 @@ exports.postUserLogin = async (req, res, next) => {
                 throw new Error('Something went wrong');
             }
             if (result) {
-                res.status(200).json('User login successfully');
+                res.status(200).json({message:'User login successfully',token:generateAccessToken(user[0].id)});
             } else {
                 res.status(401).json('Password is incorrect. Please try again!');
             }
