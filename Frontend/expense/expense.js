@@ -2,7 +2,8 @@ var url = 'http://localhost:3000/expense'
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const expenseList = await axios.get(`${url}`);
+        const token=localStorage.getItem('token');
+        const expenseList = await axios.get(`${url}`,{headers:{"Authorization":token}});
         if (expenseList.data.length > 0) {
             for (exp of expenseList.data) {
                 showExpenseOnScreen(exp);
@@ -38,12 +39,13 @@ async function storeAndShowExpense(e) {
         category: category
     };
 
+    const token=localStorage.getItem('token');
     try {
         let exp;
         if (id === "null") {
-            exp = await axios.post(`${url}/add-expense`, expObj);
+            exp = await axios.post(`${url}/add-expense`, expObj,{headers:{"Authorization":token}});
         } else {
-            exp = await axios.post(`${url}/update-expense`, expObj);
+            exp = await axios.post(`${url}/update-expense`, expObj,{headers:{"Authorization":token}});
         }
         showExpenseOnScreen(exp.data);
 
@@ -65,8 +67,13 @@ function showExpenseOnScreen(exp) {
 }
 
 async function deleteExpense(id) {
+    const error = document.getElementById('err');
+    if (error) {
+        error.parentNode.removeChild(error);
+    }
+    const token=localStorage.getItem('token');
     try {
-        await axios.post(`${url}/delete-expense/${id}`);
+        await axios.post(`${url}/delete-expense/${id}`,id,{headers:{"Authorization":token}});
         const expNode = document.getElementById(id);
         expNode.parentNode.removeChild(expNode);
     } catch (error) {
