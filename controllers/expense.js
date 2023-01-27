@@ -2,7 +2,7 @@ const sequleize = require('../util/database');
 
 const Expense = require('../models/expense');
 
-exports.getExpenses = async (req, res, next) => {
+exports.getExpenses = async (req, res) => {
     try {
         // console.log(req.user);
         const expenses = await req.user.getExpenses();
@@ -10,10 +10,10 @@ exports.getExpenses = async (req, res, next) => {
     } catch (error) {
         res.status(504).json(error);
         console.log(error);
-    }
+    } 
 }
 
-exports.postAddExpense = async (req, res, next) => {
+exports.postAddExpense = async (req, res) => {
     try {
         const {amount,description,category}=req.body;
         const exp = await req.user.createExpense({amount,description,category});
@@ -23,10 +23,11 @@ exports.postAddExpense = async (req, res, next) => {
 
     } catch (error) {
         res.status(504).json(error);
+        console.log(error);
     }
 }
 
-exports.postUpdateExpense = async (req, res, next) => {
+exports.postUpdateExpense = async (req, res) => {
     try {
         const exp = await Expense.findByPk(req.body.id);
         console.log(exp.dataValues);
@@ -37,24 +38,25 @@ exports.postUpdateExpense = async (req, res, next) => {
         const result=await exp.save();
 
         res.status(201).json(result);
-        console.log(result.dataValues);
+        // console.log(result.dataValues);
         console.log('expense updated');
     } catch (error) {
         res.status(504).json(error);
+        console.log(error);
     }
 }
 
-exports.postdeleteExpense = async (req, res, next) => {
+exports.postdeleteExpense = async (req, res) => {
     try {
         const id = req.params.expenseId;
         const exp = await Expense.findByPk(id);
-
         const result=await exp.destroy();
 
-        res.json(result);
-        console.log(result);
-        console.log('expense deleted');
-    } catch (error) {
+        res.status(200).json(result);
+        console.log('expense deleted');        
+    } 
+    catch (error) {
         res.status(504).json(error);
+        console.log(error);
     }
 }

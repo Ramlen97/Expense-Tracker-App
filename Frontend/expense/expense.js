@@ -1,9 +1,10 @@
-var url = 'http://localhost:3000/expense'
+var url = 'http://localhost:3000';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const token=localStorage.getItem('token');
-        const expenseList = await axios.get(`${url}`,{headers:{"Authorization":token}});
+    try {        
+        localStorage.getItem('premium')==="true"? document.getElementById('rzp-button').textContent="Premium User":document.getElementById('rzp-button').textContent="Go Premium";
+        const token = localStorage.getItem('token');
+        const expenseList = await axios.get(`${url}/expense`, { headers: { "Authorization": token } });
         if (expenseList.data.length > 0) {
             for (exp of expenseList.data) {
                 showExpenseOnScreen(exp);
@@ -21,7 +22,7 @@ async function storeAndShowExpense(e) {
     e.preventDefault();
     const error = document.getElementById('err');
     if (error) {
-        error.parentNode.removeChild(error);
+        error.remove();
     }
 
     const id = document.getElementById('id').value
@@ -29,8 +30,7 @@ async function storeAndShowExpense(e) {
     const description = document.getElementById('description').value
     const category = document.getElementById('category').value
     if (!amount || !description || !category) {
-        document.body.innerHTML += "<h4 id='err'>Please fill all the fields to add an expense!</h4>";
-        return;
+        return document.body.innerHTML += "<h4 id='err'>Please fill all the fields to add an expense!</h4>";
     }
     const expObj = {
         id: id,
@@ -39,13 +39,13 @@ async function storeAndShowExpense(e) {
         category: category
     };
 
-    const token=localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     try {
         let exp;
         if (id === "null") {
-            exp = await axios.post(`${url}/add-expense`, expObj,{headers:{"Authorization":token}});
+            exp = await axios.post(`${url}/expense/add-expense`, expObj, { headers: { "Authorization": token } });
         } else {
-            exp = await axios.post(`${url}/update-expense`, expObj,{headers:{"Authorization":token}});
+            exp = await axios.post(`${url}/expense/update-expense`, expObj, { headers: { "Authorization": token } });
         }
         showExpenseOnScreen(exp.data);
 
@@ -69,16 +69,15 @@ function showExpenseOnScreen(exp) {
 async function deleteExpense(id) {
     const error = document.getElementById('err');
     if (error) {
-        error.parentNode.removeChild(error);
+        error.remove();
     }
-    const token=localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     try {
-        await axios.post(`${url}/delete-expense/${id}`,id,{headers:{"Authorization":token}});
-        const expNode = document.getElementById(id);
-        expNode.parentNode.removeChild(expNode);
+        await axios.post(`${url}/expense/delete-expense/${id}`, id, { headers: { "Authorization": token } });
+        document.getElementById(id).remove();
     } catch (error) {
         document.body.innerHTML += "<h4 id='err'>Sorry! Expense cannot be deleted</h4>";
-        console.log(error);
+        console.log(error.response);
     }
 }
 
@@ -88,6 +87,42 @@ function editExpense(id, amount, description, category) {
     document.getElementById('description').value = description;
     document.getElementById('category').value = category;
 
-    const expNode = document.getElementById(id);
-    expNode.parentNode.removeChild(expNode);
+    document.getElementById(id).remove();
 }
+
+document.getElementById('rzp-button').onclick = async (e) => {
+    if(localStorage.getItem('premium')==='true') return alert('You are already a Premium User');
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${url}/purchase/premiummembership`, { headers: { "Authorization": token } });
+        // console.log(response);
+        const options = {
+            key: response.data.key_id,
+            order_id: response.data.order.id,
+            handler: async (response) => {
+                // console.log(response);
+                await axios.post(`${url}/purchase/updatetransaction`, {
+                    order_id: options.order_id,
+                    payment_id: response.razorpay_payment_id
+                }, { headers: { "Authorization": token } })
+
+                alert('You are a Premium User Now');
+                localStorage.setItem('premium',true);
+
+            }
+        }
+
+        const rzp1 = new Razorpay(options);
+        rzp1.open();
+        e.preventDefault();
+
+        rzp1.on('payment.failed', (response) => {
+            console.log(response);
+            alert('Something went wrong');
+        })
+    } catch (error) {
+        console.log(error);
+        document.body.innerHTML += "<h4 id='err'>Something went wrong!</h4>";
+    }
+}
+
