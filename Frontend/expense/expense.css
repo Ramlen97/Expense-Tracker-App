@@ -6,7 +6,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: hsl(184, 43%, 46%);
+    background-color: hwb(182 51% 25%);
 }
 
 form {
@@ -15,8 +15,8 @@ form {
     border-radius: 25px;
     width: max-content;
     background: ghostwhite;
-    padding: 25px;
-    margin: 1rem 5rem;
+    padding: 20px;
+    margin: 0.8rem 5rem;
 }
 
 h1 {
@@ -24,8 +24,8 @@ h1 {
     height: 3rem;
     text-align: center;
     padding: 5px;
-    color: rgb(82, 216, 221);
-    background: #6b2424
+    color: hwb(184 59% 15%);
+    background: hsl(0, 27%, 15%)
 }
 
 label {
@@ -48,7 +48,6 @@ button {
     border: none;
     border-radius: 5px;
     color: white;
-    margin-top: 5px;
     cursor: pointer;
 }
 
@@ -66,9 +65,9 @@ a:hover {
     color: #aa0303;
 }
 
-li{
+h3{
     color:black;
-    margin: 0rem 7rem;
+    margin: 0rem 6rem;
 }
 
 h4 {
@@ -77,9 +76,18 @@ h4 {
     color: #6b2424;
 }
 
-.premium{
-    text-align: right;
-    margin-right: 8rem;    
+li{
+    color:black;
+    margin: 2px 6rem;
 }
 
+#premium{
+    text-align: right;
+    margin-right: 8rem;
+    color: #aa0303;
+    font-size:1.4rem;      
+}
 
+#expense-list{
+    margin-bottom : 1rem;
+}

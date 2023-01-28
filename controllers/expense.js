@@ -16,6 +16,9 @@ exports.getExpenses = async (req, res) => {
 exports.postAddExpense = async (req, res) => {
     try {
         const {amount,description,category}=req.body;
+        if(!amount || !description || !category){
+            return res.status(400).json({message:"Some fields are misisng!"});
+        }
         const exp = await req.user.createExpense({amount,description,category});
         console.log(exp.dataValues);
         res.status(201).json(exp);

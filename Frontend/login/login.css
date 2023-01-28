@@ -6,7 +6,7 @@
 body{ 
     margin:0;
     padding:0;
-    background-color:hsl(184, 43%, 46%);           
+    background-color: hwb(182 51% 25%);         
 }
 
 form{
@@ -61,8 +61,8 @@ h1{
     height: 3rem;
     text-align: center;
     padding: 5px;
-    color: rgb(82, 216, 221);
-    background:#6b2424
+    color: hwb(184 59% 15%);
+    background: hsl(0, 27%, 15%)
 }
 
 h4{

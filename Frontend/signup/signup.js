@@ -21,6 +21,6 @@ async function signup(e){
         
     } catch (error) {
         console.log("Inside error",error.response.data);
-        document.body.innerHTML+=`<h4 id="err">${error.response.data}</h4>`;
+        document.body.innerHTML+=`<h4 id="err">Something went wrong!</h4>`;
     }
 }
