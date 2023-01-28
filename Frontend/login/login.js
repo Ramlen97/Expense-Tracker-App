@@ -14,12 +14,11 @@ async function login(e){
         if (response.status===200){
             alert(response.data.message);
             localStorage.setItem('token',response.data.token);
-            localStorage.setItem('premium',response.data.premium);
             window.location.href="../expense/expense.html";
         }
         
     } catch (error) {
-        document.body.innerHTML+=`<h4 id="err">${error.response.data}</h4>`;
+        document.body.innerHTML+=`<h4 id="err">Something went wrong!</h4>`;
         console.log("Inside error",error.response.data);
     }
 }
