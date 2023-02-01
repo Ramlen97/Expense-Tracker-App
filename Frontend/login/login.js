@@ -8,7 +8,7 @@ async function login(e){
         email:e.target.email.value,
         password:e.target.password.value
     }
-    console.log(loginDetails);
+    // console.log(loginDetails);
     try {
         const response= await axios.post('http://localhost:3000/user/login',loginDetails);
         if (response.status===200){

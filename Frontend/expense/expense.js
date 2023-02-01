@@ -10,6 +10,13 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
+function checkErrorMessages(){
+    const error = document.getElementById('err');
+    if (error) {
+        error.remove();
+    }
+}
+
 function showPremiumUserMessage() {
     document.getElementById('rzp-button').style.visibility = "hidden";
     document.getElementById('premium').innerHTML = 'You are a Premium User';
@@ -40,11 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function storeAndShowExpense(e) {
     e.preventDefault();
-    const error = document.getElementById('err');
-    if (error) {
-        error.remove();
-    }
-
+    checkErrorMessages();
     const id = document.getElementById('id').value
     const amount = document.getElementById('amount').value
     const description = document.getElementById('description').value
@@ -87,10 +90,7 @@ function showExpenseOnScreen(exp) {
 }
 
 async function deleteExpense(id) {
-    const error = document.getElementById('err');
-    if (error) {
-        error.remove();
-    }
+    checkErrorMessages();
     const token = localStorage.getItem('token');
     try {
         await axios.post(`${url}/expense/delete-expense/${id}`,null,{ headers: { "Authorization": token } });
@@ -102,6 +102,7 @@ async function deleteExpense(id) {
 }
 
 function editExpense(id, amount, description, category) {
+    checkErrorMessages();
     document.getElementById('id').value = id;
     document.getElementById('amount').value = amount;
     document.getElementById('description').value = description;
@@ -111,6 +112,7 @@ function editExpense(id, amount, description, category) {
 }
 
 document.getElementById('rzp-button').onclick= async(e) =>{
+    checkErrorMessages();
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${url}/purchase/premiummembership`, { headers: { "Authorization": token } });
@@ -119,14 +121,16 @@ document.getElementById('rzp-button').onclick= async(e) =>{
             key: response.data.key_id,
             order_id: response.data.order.id,
             handler: async (response) => {
-                // console.log(response);
-                response=await axios.post(`${url}/purchase/updatetransaction`, {
+                console.log(response);
+                result=await axios.post(`${url}/purchase/updatetransaction`, {
+                    status:"successful",
                     order_id: options.order_id,
-                    payment_id: response.razorpay_payment_id
-                }, { headers: { "Authorization": token } })
+                    payment_id: response.razorpay_payment_id                    
+                }, { headers: { "Authorization": token } });
 
                 alert('You are a Premium User Now');
-                localStorage.setItem('token',response.data.token);
+                localStorage.setItem('token',result.data.token);
+                showPremiumUserMessage();
             }
         }
 
@@ -135,9 +139,14 @@ document.getElementById('rzp-button').onclick= async(e) =>{
         e.preventDefault();
 
         rzp1.on('payment.failed', (response) => {
-            console.log(response);
+            console.log('payment failed',response.error.metadata.payment_id);
             alert('Something went wrong');
-        })
+            axios.post(`${url}/purchase/updatetransaction`, {
+                status:"failed",
+                order_id:response.error.metadata.order_id,
+                payment_id:response.error.metadata.payment_id
+            },{ headers: { "Authorization": token }});
+        });
     }
     catch (error) {
         console.log(error);
@@ -146,12 +155,13 @@ document.getElementById('rzp-button').onclick= async(e) =>{
 }
 
 async function showLeaderboard(e){
+    checkErrorMessages();
     try {
         const token=localStorage.getItem('token');
-        const list=await axios.get(`${url}/premium/leaderboard`,{ headers: { "Authorization": token } });
-        console.log(list.data);
+        const leaderboard=await axios.get(`${url}/premium/leaderboard`,{ headers: { "Authorization": token } });
+        console.log(leaderboard.data);
         document.getElementById('leaderboard-list').innerHTML="";
-        for (user of list.data){
+        for (user of leaderboard.data){
             showUsersOnLeaderboard(user);
         }
     } 

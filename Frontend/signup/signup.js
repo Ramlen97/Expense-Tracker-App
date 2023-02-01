@@ -20,7 +20,7 @@ async function signup(e){
         }
         
     } catch (error) {
-        console.log("Inside error",error.response.data);
+        console.log("Inside error",error.response);
         document.body.innerHTML+=`<h4 id="err">Something went wrong!</h4>`;
     }
 }
