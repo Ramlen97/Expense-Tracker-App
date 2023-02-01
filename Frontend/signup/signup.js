@@ -2,7 +2,7 @@ async function signup(e){
     e.preventDefault();
     const error=document.getElementById('err');
     if(error){
-        error.parentNode.removeChild(error);
+        error.remove();
     }
     const signupDetails={
         name:e.target.name.value,
