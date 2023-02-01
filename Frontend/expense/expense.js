@@ -10,7 +10,7 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
-function checkErrorMessages(){
+function checkErrorMessage(){
     const error = document.getElementById('err');
     if (error) {
         error.remove();
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function storeAndShowExpense(e) {
     e.preventDefault();
-    checkErrorMessages();
+    checkErrorMessage();
     const id = document.getElementById('id').value
     const amount = document.getElementById('amount').value
     const description = document.getElementById('description').value
@@ -90,7 +90,7 @@ function showExpenseOnScreen(exp) {
 }
 
 async function deleteExpense(id) {
-    checkErrorMessages();
+    checkErrorMessage();
     const token = localStorage.getItem('token');
     try {
         await axios.post(`${url}/expense/delete-expense/${id}`,null,{ headers: { "Authorization": token } });
@@ -102,7 +102,7 @@ async function deleteExpense(id) {
 }
 
 function editExpense(id, amount, description, category) {
-    checkErrorMessages();
+    checkErrorMessage();
     document.getElementById('id').value = id;
     document.getElementById('amount').value = amount;
     document.getElementById('description').value = description;
@@ -112,7 +112,7 @@ function editExpense(id, amount, description, category) {
 }
 
 document.getElementById('rzp-button').onclick= async(e) =>{
-    checkErrorMessages();
+    checkErrorMessage();
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${url}/purchase/premiummembership`, { headers: { "Authorization": token } });
@@ -155,7 +155,7 @@ document.getElementById('rzp-button').onclick= async(e) =>{
 }
 
 async function showLeaderboard(e){
-    checkErrorMessages();
+    checkErrorMessage();
     try {
         const token=localStorage.getItem('token');
         const leaderboard=await axios.get(`${url}/premium/leaderboard`,{ headers: { "Authorization": token } });
