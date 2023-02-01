@@ -24,9 +24,13 @@ exports.getPremiumMembership = async (req, res) => {
 
 exports.postUpdateTransaction = async (req, res) => {
     try {
-        // console.log(req.body);
-        const { order_id, payment_id } = req.body;
+        console.log(req.body);
+        const { status, order_id, payment_id } = req.body;
         const order = await Order.findOne({ where: { orderId: order_id } });
+        if (status === "failed") {
+            console.log('payment failed');
+            return order.update({ paymentId: payment_id, status: "FAILED" });
+        }
         const promise1 = order.update({ paymentId: payment_id, status: "SUCCESSFUL" });
         const promise2 = req.user.update({ isPremiumUser: true });
 
