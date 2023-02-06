@@ -19,7 +19,7 @@ exports.getLeaderboard = async (req, res) => {
     }
     catch (error) {
         console.log(error);
-        res.status(504).json(error);
+        res.status(504).json({message:'Something went wrong',error:error});
     }
 
 }

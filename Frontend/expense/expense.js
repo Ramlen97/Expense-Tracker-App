@@ -10,16 +10,21 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
-function checkErrorMessage(){
-    const error = document.getElementById('err');
-    if (error) {
-        error.remove();
+function showErrorMessage(error) {    
+    if (error.response) {
+        document.getElementById('err').textContent=`${error.response.data.message}`;
+    } else {
+        document.getElementById('err').textContent='Something went wrong!';
     }
 }
 
+function removeErrorMessage(){
+    document.getElementById('err').textContent="";
+}
+
 function showPremiumUserMessage() {
-    document.getElementById('rzp-button').style.visibility = "hidden";
-    document.getElementById('premium').innerHTML = 'You are a Premium User';
+    document.getElementById('rzp-button').remove();
+    document.getElementById('premium').innerHTML+= 'You are a Premium User';
     document.getElementById('premium').innerHTML+= '<button id="show-leaderboard" onclick="showLeaderboard(event)">Show Leaderboard</button>';
     document.getElementById('leaderboard').style.visibility="visible";
     showLeaderboard();
@@ -37,23 +42,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showExpenseOnScreen(exp);
             }
         } else {
-            document.body.innerHTML += "<h4 id='err'>Currently there are no Expenses!</h4>"
+            document.getElementById('err').textContent="Currently there are no Expenses!"
         }
     } catch (error) {
-        document.body.innerHTML += "<h4 id='err'>Something went wrong! Please try again</h4>";
+        showErrorMessage(error);
         console.log(error);
     }
 })
 
 async function storeAndShowExpense(e) {
     e.preventDefault();
-    checkErrorMessage();
-    const id = document.getElementById('id').value
-    const amount = document.getElementById('amount').value
-    const description = document.getElementById('description').value
-    const category = document.getElementById('category').value
+    removeErrorMessage();
+    const id = e.target.id.value
+    const amount = e.target.amount.value
+    const description = e.target.description.value
+    const category = e.target.category.value
     if (!amount || !description || !category) {
-        return document.body.innerHTML += "<h4 id='err'>Please fill all the fields to add an expense!</h4>";
+        return document.getElementById('err').textContent="Please fill all the fields to add an expense!";
     }
     const expObj = {
         id: id,
@@ -77,7 +82,7 @@ async function storeAndShowExpense(e) {
         document.getElementById('category').value = '';
     }
     catch (error) {
-        document.body.innerHTML += "<h4 id='err'>Sorry! Expense cannot be saved</h4>";
+        showErrorMessage(error);
         console.log(error);
     }
 }
@@ -90,19 +95,19 @@ function showExpenseOnScreen(exp) {
 }
 
 async function deleteExpense(id) {
-    checkErrorMessage();
+    removeErrorMessage();
     const token = localStorage.getItem('token');
     try {
         await axios.post(`${url}/expense/delete-expense/${id}`,null,{ headers: { "Authorization": token } });
         document.getElementById(id).remove();
     } catch (error) {
-        document.body.innerHTML += "<h4 id='err'>Sorry! Expense cannot be deleted</h4>";
+        showErrorMessage(error);
         console.log(error.response);
     }
 }
 
 function editExpense(id, amount, description, category) {
-    checkErrorMessage();
+    removeErrorMessage();
     document.getElementById('id').value = id;
     document.getElementById('amount').value = amount;
     document.getElementById('description').value = description;
@@ -112,7 +117,7 @@ function editExpense(id, amount, description, category) {
 }
 
 document.getElementById('rzp-button').onclick= async(e) =>{
-    checkErrorMessage();
+    removeErrorMessage();
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${url}/purchase/premiummembership`, { headers: { "Authorization": token } });
@@ -150,12 +155,12 @@ document.getElementById('rzp-button').onclick= async(e) =>{
     }
     catch (error) {
         console.log(error);
-        document.body.innerHTML += "<h4 id='err'>Something went wrong!</h4>";
+        showErrorMessage(error) ;
     }
 }
 
 async function showLeaderboard(e){
-    checkErrorMessage();
+    removeErrorMessage();
     try {
         const token=localStorage.getItem('token');
         const leaderboard=await axios.get(`${url}/premium/leaderboard`,{ headers: { "Authorization": token } });
@@ -167,7 +172,7 @@ async function showLeaderboard(e){
     } 
     catch (error) {
         console.log(error);
-        document.body.innerHTML += "<h4 id='err'>Something went wrong!</h4>";
+        showErrorMessage(error) ;
     }    
 }
 

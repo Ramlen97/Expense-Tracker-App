@@ -8,7 +8,7 @@ exports.getExpenses = async (req, res) => {
         const expenses = await req.user.getExpenses();
         res.status(200).json(expenses);
     } catch (error) {
-        res.status(504).json(error);
+        res.status(504).json({message:'Something went wrong!',error:error});
         console.log(error);
     } 
 }
@@ -17,7 +17,7 @@ exports.postAddExpense = async (req, res) => {
     try {
         const {amount,description,category}=req.body;
         if(!amount || !description || !category){
-            return res.status(400).json({message:"Some fields are misisng!"});
+            return res.status(400).json({message:'Some fields are misisng!'});
         }
         const exp = await req.user.createExpense({amount,description,category});
         console.log(exp.dataValues);
@@ -25,7 +25,7 @@ exports.postAddExpense = async (req, res) => {
         console.log('expense added');
 
     } catch (error) {
-        res.status(504).json(error);
+        res.status(504).json({message:'Something went wrong!',error:error});
         console.log(error);
     }
 }
@@ -44,7 +44,7 @@ exports.postUpdateExpense = async (req, res) => {
         // console.log(result.dataValues);
         console.log('expense updated');
     } catch (error) {
-        res.status(504).json(error);
+        res.status(504).json({message:'Something went wrong!',error:error});
         console.log(error);
     }
 }
@@ -59,7 +59,7 @@ exports.postdeleteExpense = async (req, res) => {
         console.log('expense deleted');        
     } 
     catch (error) {
-        res.status(504).json(error);
+        res.status(504).json({message:'Something went wrong!',error:error});
         console.log(error);
     }
 }

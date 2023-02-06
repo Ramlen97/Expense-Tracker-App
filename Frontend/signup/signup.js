@@ -1,3 +1,11 @@
+function showErrorMessage(error) {    
+    if (error.response) {
+        document.body.innerHTML += `<h4 id="err">${error.response.data.message}</h4>`;
+    } else {
+        document.body.innerHTML += `<h4 id="err">Something went wrong!</h4>`;
+    }
+}
+
 async function signup(e){
     e.preventDefault();
     const error=document.getElementById('err');
@@ -20,7 +28,7 @@ async function signup(e){
         }
         
     } catch (error) {
-        console.log("Inside error",error.response);
-        document.body.innerHTML+=`<h4 id="err">Something went wrong!</h4>`;
+        console.log(error);
+        showErrorMessage(error) ;
     }
 }

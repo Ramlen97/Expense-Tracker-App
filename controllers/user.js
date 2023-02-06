@@ -10,12 +10,12 @@ generateAccessToken=(id,name,isPremium)=>{
 postUserSignup = async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-        return res.status(400).json('Something is missing! Please fill all the details to proceed');
+        return res.status(400).json({message:'Something is missing! Please fill all the details to proceed'});
     }
     try {
         const user = await User.findAll({ where: { email: email } });
         if (user[0]) {
-            return res.status(400).json('User already exists. Kindly login')
+            return res.status(400).json({message:'User already exists. Kindly login'})
         }
         const saltrounds = 10;
         bcrypt.hash(password, saltrounds, async (err, hash) => {
@@ -25,19 +25,19 @@ postUserSignup = async (req, res) => {
         })
     }
     catch (error) {
-        res.status(500).json('Error : Something went wrong');
+        res.status(500).json({message:'Something went wrong!',error:error} );
     }
 }
 
 postUserLogin = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return res.status(400).json('Kindly enter email and password both to proceed');
+        return res.status(400).json({message:'Kindly enter your email and password to proceed'});
     }
     try {
         const user = await User.findOne({ where: { email: email } });
         if (!user) {
-            return res.status(404).json("Sorry! User not found");
+            return res.status(404).json({message:'Sorry! User not found'});
         }
         bcrypt.compare(password, user.password, (err, result) => {
             if (err) {
@@ -46,11 +46,11 @@ postUserLogin = async (req, res) => {
             if (result) {
                 res.status(200).json({message:'User login successfully',token:generateAccessToken(user.id,user.name,user.isPremiumUser)});
             } else {
-                res.status(401).json('Password is incorrect. Please try again!');
+                res.status(401).json({message:'Password is incorrect. Please try again!'});
             }
         })
     } catch (error) {
-        res.status(500).json('Something went wrong. Please try again!');
+        res.status(500).json({message:'Something went wrong. Please try again!',error:error});
     }
 }
 
