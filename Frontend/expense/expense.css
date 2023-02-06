@@ -6,7 +6,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: hwb(182 51% 25%);
+    background-color: hwb(182 58% 11%);
 }
 
 form {
@@ -70,22 +70,24 @@ h3{
     margin: 0rem 6rem;
 }
 
-h4 {
-    font-family: sans-serif;
-    text-align: center;
-    color: #6b2424;
-}
-
 li{
     color:black;
     margin: 2px 6rem;
 }
+
+
 
 #premium{
     text-align: right;
     margin-right: 8rem;
     color: #aa0303;
     font-size:1.4rem;      
+}
+
+#err {
+    font-family: sans-serif;
+    text-align: center;
+    color: #6b2424;
 }
 
 #expense-list{
