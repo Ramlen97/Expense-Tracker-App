@@ -5,15 +5,7 @@ const Expense=require('../models/expense');
 exports.getLeaderboard = async (req, res) => {
     try {
         const leaderboard = await User.findAll({
-            attributes:['id','name',[sequelize.fn('sum',sequelize.col('amount')),'totalExpense']],
-            include:[
-                {
-                    model:Expense,
-                    attributes:[]
-                }
-            ],
-            group:['id'],
-            order:[['totalExpense',"DESC"]]
+            attributes:['id','name','totalExpense'],        
         })
         res.status(200).json(leaderboard);
     }
