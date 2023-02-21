@@ -15,7 +15,7 @@ postUserSignup = async (req, res) => {
     try {
         const user = await User.findAll({ where: { email: email } });
         if (user[0]) {
-            return res.status(400).json({message:'User already exists. Kindly login'})
+            return res.status(400).json({message:'User already exists. Please login!'})
         }
         const saltrounds = 10;
         bcrypt.hash(password, saltrounds, async (err, hash) => {

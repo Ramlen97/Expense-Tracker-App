@@ -26,7 +26,7 @@ function showPremiumUserMessage() {
     document.getElementById('rzp-button').remove();
     document.getElementById('premium').innerHTML+= 'You are a Premium User';
     document.getElementById('premium').innerHTML+= '<button id="show-leaderboard" onclick="showLeaderboard(event)">Show Leaderboard</button>';
-    document.getElementById('leaderboard').style.visibility="visible";
+    document.getElementById('leaderboard').style.display="block";
     showLeaderboard();
 }
 
