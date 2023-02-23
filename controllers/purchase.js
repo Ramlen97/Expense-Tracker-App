@@ -1,20 +1,16 @@
-const Razorpay = require('razorpay');
-const Order = require('../models/order');
 const sequelize = require('../util/database');
-const User = require('./user');
+const RazorpayServices = require('../services/razorpayservices');
+const UserServices=require('../services/userservices');
+const OrderServices = require('../services/orderservices');
+const JwtServices=require('../services/jwtservices');
 
-exports.getPremiumMembership = async (req, res) => {
+const getPremiumMembership = async (req, res) => {
     try {
-        const rzp = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_KEY_SECRET
-        })
-
         const amount = 2500;
-        const order = await rzp.orders.create({ amount, currency: "INR" });
+        const order = await RazorpayServices.createOrder(amount);
         // console.log(order);
 
-        await req.user.createOrder({ orderId: order.id, status: "PENDING" });
+        await UserServices.createOrder(req.user,{ orderId: order.id, status: "PENDING" });
         res.status(201).json({ order, key_id: rzp.key_id });
 
     } catch (error) {
@@ -23,22 +19,22 @@ exports.getPremiumMembership = async (req, res) => {
     }
 }
 
-exports.postUpdateTransaction = async (req, res) => {
+const postUpdateTransaction = async (req, res) => {
     try {
         const result = sequelize.transaction(async (t) => {
             const { status, order_id, payment_id } = req.body;
-            const order = await Order.findOne({ where: { orderId: order_id } });
+            const order = await OrderServices.getOrder({ where: { orderId: order_id } });
             if (status === "failed") {
                 console.log('payment failed');
-                return order.update({ paymentId: payment_id, status: "FAILED" });
+                return OrderServices.updateOrder(order,{ paymentId: payment_id, status: "FAILED" });
             }
             await Promise.all([
-                order.update({ paymentId: payment_id, status: "SUCCESSFUL" },{transaction:t}),
-                req.user.update({ isPremiumUser: true },{transaction:t})
+                OrderServices.updateOrder({ paymentId: payment_id, status: "SUCCESSFUL" },{transaction:t}),
+                UserServices.updateUser(req.user,{ isPremiumUser: true },{transaction:t})
             ]);
             const { id, name, isPremiumUser } = req.user;
             res.status(202).json(({
-                success: true, message: 'Transaction successful', token: User.generateAccessToken(id, name, isPremiumUser)
+                success: true, message: 'Transaction successful', token: JwtServices.generateToken(id, name, isPremiumUser)
             }));
         })
 
@@ -48,4 +44,9 @@ exports.postUpdateTransaction = async (req, res) => {
         console.log(error);
     }
 
+}
+
+module.exports={
+    getPremiumMembership,
+    postUpdateTransaction
 }

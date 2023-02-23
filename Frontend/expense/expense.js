@@ -10,23 +10,25 @@ function parseJwt(token) {
     return JSON.parse(jsonPayload);
 }
 
-function showErrorMessage(error) {    
+function showErrorMessage(error) {
     if (error.response) {
-        document.getElementById('err').textContent=`${error.response.data.message}`;
+        document.getElementById('err').textContent = `${error.response.data.message}`;
     } else {
-        document.getElementById('err').textContent='Something went wrong!';
+        document.getElementById('err').textContent = 'Something went wrong!';
     }
 }
 
-function removeErrorMessage(){
-    document.getElementById('err').textContent="";
+function removeErrorMessage() {
+    document.getElementById('err').textContent = "";
 }
 
 function showPremiumUserMessage() {
     document.getElementById('rzp-button').remove();
-    document.getElementById('premium').innerHTML+= 'You are a Premium User';
-    document.getElementById('premium').innerHTML+= '<button id="show-leaderboard" onclick="showLeaderboard(event)">Show Leaderboard</button>';
-    document.getElementById('leaderboard').style.display="block";
+    document.getElementById('premium-text').innerHTML += '<p>You are a Premium User</p>';
+    document.getElementById('premium-features').innerHTML +=
+        `<button id="download-expenses" onclick="downloadExpenses(event)">Download Expenses</button>
+    <button id="show-leaderboard" onclick="showLeaderboard(event)">Show Leaderboard</button>`;
+    document.getElementById('leaderboard').style.display = "block";
     showLeaderboard();
 }
 
@@ -42,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 showExpenseOnScreen(exp);
             }
         } else {
-            document.getElementById('err').textContent="Currently there are no Expenses!"
+            document.getElementById('err').textContent = "Currently there are no Expenses!"
         }
     } catch (error) {
         showErrorMessage(error);
@@ -58,7 +60,7 @@ async function storeAndShowExpense(e) {
     const description = e.target.description.value
     const category = e.target.category.value
     if (!amount || !description || !category) {
-        return document.getElementById('err').textContent="Please fill all the fields to add an expense!";
+        return document.getElementById('err').textContent = "Please fill all the fields to add an expense!";
     }
     const expObj = {
         id: id,
@@ -98,7 +100,7 @@ async function deleteExpense(id) {
     removeErrorMessage();
     const token = localStorage.getItem('token');
     try {
-        await axios.post(`${url}/expense/delete-expense/${id}`,null,{ headers: { "Authorization": token } });
+        await axios.post(`${url}/expense/delete-expense/${id}`, null, { headers: { "Authorization": token } });
         document.getElementById(id).remove();
     } catch (error) {
         showErrorMessage(error);
@@ -116,7 +118,7 @@ function editExpense(id, amount, description, category) {
     document.getElementById(id).remove();
 }
 
-document.getElementById('rzp-button').onclick= async(e) =>{
+document.getElementById('rzp-button').onclick = async (e) => {
     removeErrorMessage();
     try {
         const token = localStorage.getItem('token');
@@ -127,14 +129,14 @@ document.getElementById('rzp-button').onclick= async(e) =>{
             order_id: response.data.order.id,
             handler: async (response) => {
                 console.log(response);
-                result=await axios.post(`${url}/purchase/updatetransaction`, {
-                    status:"successful",
+                result = await axios.post(`${url}/purchase/updatetransaction`, {
+                    status: "successful",
                     order_id: options.order_id,
-                    payment_id: response.razorpay_payment_id                    
+                    payment_id: response.razorpay_payment_id
                 }, { headers: { "Authorization": token } });
 
                 alert('You are a Premium User Now');
-                localStorage.setItem('token',result.data.token);
+                localStorage.setItem('token', result.data.token);
                 showPremiumUserMessage();
             }
         }
@@ -144,39 +146,55 @@ document.getElementById('rzp-button').onclick= async(e) =>{
         e.preventDefault();
 
         rzp1.on('payment.failed', (response) => {
-            console.log('payment failed',response.error.metadata.payment_id);
+            console.log('payment failed', response.error.metadata.payment_id);
             alert('Something went wrong');
             axios.post(`${url}/purchase/updatetransaction`, {
-                status:"failed",
-                order_id:response.error.metadata.order_id,
-                payment_id:response.error.metadata.payment_id
-            },{ headers: { "Authorization": token }});
+                status: "failed",
+                order_id: response.error.metadata.order_id,
+                payment_id: response.error.metadata.payment_id
+            }, { headers: { "Authorization": token } });
         });
     }
     catch (error) {
         console.log(error);
-        showErrorMessage(error) ;
+        showErrorMessage(error);
     }
 }
 
-async function showLeaderboard(e){
+async function downloadExpenses(e) {
     removeErrorMessage();
     try {
-        const token=localStorage.getItem('token');
-        const leaderboard=await axios.get(`${url}/premium/leaderboard`,{ headers: { "Authorization": token } });
-        console.log(leaderboard.data);
-        document.getElementById('leaderboard-list').innerHTML="";
-        for (user of leaderboard.data){
-            showUsersOnLeaderboard(user);
-        }
-    } 
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${url}/expense/download`, { headers: { "Authorization": token } });
+        const a=document.createElement('a');
+        a.href=response.data.fileURL;
+        a.download='myexpense.csv';
+        a.click();
+    }
     catch (error) {
         console.log(error);
-        showErrorMessage(error) ;
-    }    
+        showErrorMessage(error)
+    }
 }
 
-function showUsersOnLeaderboard(user){
-    const leaderboard=document.getElementById('leaderboard-list');
-    leaderboard.innerHTML+=`<li>Name - ${user.name} ; Total Expense - ${user.totalExpense}</li>`;
+async function showLeaderboard(e) {
+    removeErrorMessage();
+    try {
+        const token = localStorage.getItem('token');
+        const leaderboard = await axios.get(`${url}/premium/leaderboard`, { headers: { "Authorization": token } });
+        // console.log(leaderboard.data);
+        document.getElementById('leaderboard-list').innerHTML = "";
+        for (user of leaderboard.data) {
+            showUsersOnLeaderboard(user);
+        }
+    }
+    catch (error) {
+        console.log(error);
+        showErrorMessage(error);
+    }
+}
+
+function showUsersOnLeaderboard(user) {
+    const leaderboard = document.getElementById('leaderboard-list');
+    leaderboard.innerHTML += `<li>Name - ${user.name} ; Total Expense - ${user.totalExpense}</li>`;
 }
