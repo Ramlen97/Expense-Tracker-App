@@ -1,50 +1,24 @@
-const path = require('path');
-const bcrypt = require('bcrypt');
-const Sib = require('sib-api-v3-sdk');
+const UserServices = require('../services/userservices');
+const ForgotpasswordServices = require('../services/forgotpasswordservices');
+const SibServices = require('../services/sibservices');
 const { v4: uuidv4 } = require('uuid');
-
+const bcrypt = require('bcrypt');
 const sequelize=require('../util/database');
-const User = require('../models/user');
-const ForgotPassword = require('../models/forgotpassword');
 
-const client = Sib.ApiClient.instance;
-const apiKey = client.authentications['api-key'];
-apiKey.apiKey = process.env.SMTP_API_Key;
 
-const tranEmailApi = new Sib.TransactionalEmailsApi();
-
-exports.postForgotPassword = async (req, res) => {
+const postForgotPassword = async (req, res) => {
     const email = req.body.email;
     if (!email) {
         return res.status(400).json({ message: 'Please enter your email to proceed' });
     }
     try {
-        const user = await User.findOne({ where: { email } })
+        const user = await UserServices.getUser({ where: { email } })
         if (!user) {
             return res.status(404).json({ message: "Sorry! User not found" });
         }
-        const sender = {
-            email: process.env.EMAIL,
-            name: 'Expense Tracker'
-        }
-        const receivers = [{
-            email: email
-        }]
         const id = uuidv4();
-        const resetPasswordEmail = await tranEmailApi.sendTransacEmail({
-            sender,
-            to: receivers,
-            subject: 'Forgot password',
-            textContent: `Please Click on the link to reset your password`,
-            htmlContent: `
-            <h2>Hello {{params.name}},</h2>
-            <p>Please click on the below link to reset your password.</p>
-            <a href="http://localhost:3000/password/resetpassword/${id}">Reset your password</a>`,
-            params: {
-                name: user.name
-            }
-        });
-        const result = await user.createForgotpassword({ id: id, isActive: true });
+        const resetEmail= await SibServices.resetpasswordEmail(user,id);
+        const result = await UserServices.createForgotpassword(user,{ id: id, isActive: true });
         res.status(200).json({ message: 'Reset passsword email sent succesfully' });
     }
     catch (err) {
@@ -53,11 +27,11 @@ exports.postForgotPassword = async (req, res) => {
     }
 }
 
-exports.getResetPassword = async (req, res) => {
+const getResetPassword = async (req, res) => {
     try {
         const id = req.params.id;
-        const forgotpassword = await ForgotPassword.findOne({ where: { id: id } });
-        console.log(forgotpassword.isActive);
+        const forgotpassword = await ForgotpasswordServices.getForgotpassword({ where: { id: id } });
+        // console.log(forgotpassword.isActive);
         if (forgotpassword && forgotpassword.isActive === true) {
             res.status(200).send(
                 `<html>
@@ -80,16 +54,16 @@ exports.getResetPassword = async (req, res) => {
     }
 }
 
-exports.getUpdatePassword = async(req, res) => {
+const getUpdatePassword = async(req, res) => {
     try {
         const { id } = req.params;
-        console.log(id, req.params);
+        // console.log(id, req.params);
         const { newpassword } = req.query;
         if (!newpassword) {
             return res.status(400).json('Please enter the password');
         }
-        const forgotpassword = await ForgotPassword.findOne({ where: { id: id } });
-        const user = await User.findOne({ where: { id: forgotpassword.userId } });
+        const forgotpassword = await ForgotpasswordServices.getForgotpassword({ where: { id: id } });
+        const user = await UserServices.getUser({ where: { id: forgotpassword.userId } });
         bcrypt.hash(newpassword, 10, async (err, hash) => {
             if (err) {
                 console.log(err);
@@ -97,10 +71,10 @@ exports.getUpdatePassword = async(req, res) => {
             };
             const transactions = sequelize.transaction(async (t) => {
                 const response = await Promise.all([
-                    forgotpassword.update({ isActive: false }, { transaction: t }),
-                    user.update({ password: hash }, { transaction: t })
+                    ForgotpasswordServices.updateForgotpassword(forgotpassword,{ isActive: false }, { transaction: t }),
+                    UserServices.updateUser(user,{ password: hash }, { transaction: t })
                 ])
-                console.log(response);
+                // console.log(response);
                 res.status(201).json('Password changed successfully. Please login again')
             });
         })
@@ -108,4 +82,10 @@ exports.getUpdatePassword = async(req, res) => {
         console.log(error);
         res.status(500).json('Something went wrong!');
     }
+}
+
+module.exports={
+    postForgotPassword,
+    getResetPassword,
+    getUpdatePassword
 }

@@ -6,7 +6,7 @@ const router=express();
 
 router.get('/',userAuthentication,expenseController.getExpenses);
 
-router.get('/download',userAuthentication,expenseController.getDownloadExpenses)
+router.get('/download',userAuthentication,expenseController.getDownloadExpenses);
 
 router.post('/add-expense',userAuthentication,expenseController.postAddExpense);
 
