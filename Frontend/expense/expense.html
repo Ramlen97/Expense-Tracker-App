@@ -40,6 +40,21 @@
     <h3>Expenses</h3>
     <ul id="expense-list"></ul>
 
+    <div id="pagination" class="pagination">
+        <label for="rows">Rows per page :</label>
+        <select id="rows-per-page"name="rows" onchange="showChangedRows()">
+            <option value="5">5</option>
+            <option value="10" >10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+        </select>
+        <label id="page-details">Showing 1-5 of 11</label>
+        <button id="prev-btn" onclick="showPreviousPage()">prev</button>
+        <button id="next-btn" onclick="showNextPage()">next</button>
+    </div>
+    
+
     <div id="premium-features"></div>
 
     <h3 id="leaderboard" style="display:none">Leader Board</h3>

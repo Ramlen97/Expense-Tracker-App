@@ -6,4 +6,6 @@ const router=express.Router();
 
 router.get('/leaderboard',userAuthentication,premiumControllers.getLeaderboard);
 
+router.get('/download',userAuthentication,premiumControllers.getDownloadExpenses);
+
 module.exports=router;

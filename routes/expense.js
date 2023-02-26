@@ -2,11 +2,9 @@ const express=require('express');
 const expenseController=require('../controllers/expense');
 const userAuthentication=require('../middleware/auth');
 
-const router=express();
+const router=express.Router();
 
 router.get('/',userAuthentication,expenseController.getExpenses);
-
-router.get('/download',userAuthentication,expenseController.getDownloadExpenses);
 
 router.post('/add-expense',userAuthentication,expenseController.postAddExpense);
 

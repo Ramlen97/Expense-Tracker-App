@@ -18,7 +18,7 @@ const uploadToS3=(data, filename) =>{
             if (err) {
                 reject(err);
             } else {
-                console.log('success', s3response);
+                console.log('success');
                 resolve(s3response.Location);
             }
         })
