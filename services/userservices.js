@@ -28,6 +28,10 @@ const createExpense=(user,details,t)=>{
     return user.createExpense(details,t);
 }
 
+const countExpenses =(user,where)=>{
+    return user.countExpenses(where);
+}
+
 const createOrder=(user,details,t)=>{
     return user.createOrder(details,t);
 }
@@ -41,12 +45,13 @@ const createFiledownload=(user,details,t)=>{
 }
 
 module.exports={
-    getExpenses,
     getAllUsers,
     getUser,
     UserByPk,
     createUser,
+    getExpenses,
     createExpense,
+    countExpenses,
     updateUser,
     createOrder,
     createForgotpassword,

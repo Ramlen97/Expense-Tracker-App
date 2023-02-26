@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/Ramlen97/Expense-Tracker-App#readme",
   "dependencies": {
-    "aws-sdk": "^2.1319.0",
+    "aws-sdk": "^2.1323.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",

@@ -9,6 +9,21 @@ body {
     background-color: hwb(182 58% 11%);
 }
 
+h1 {
+    font-family: sans-serif;
+    height: 3rem;
+    text-align: center;
+    padding: 5px;
+    color: hwb(182 58% 11%);
+    background: hsl(0, 27%, 15%)
+}
+
+h3 {
+    /* font-family: sans-serif; */
+    color: black;
+    margin: 0rem 6rem;
+}
+
 form {
     font-family: sans-serif;
     border: orange 2px solid;
@@ -17,15 +32,6 @@ form {
     background: ghostwhite;
     padding: 20px;
     margin: 0.8rem 5rem;
-}
-
-h1 {
-    font-family: sans-serif;
-    height: 3rem;
-    text-align: center;
-    padding: 5px;
-    color: hwb(184 59% 15%);
-    background: hsl(0, 27%, 15%)
 }
 
 label {
@@ -41,7 +47,7 @@ input {
 }
 
 button {
-    height: 25px;
+    height: 27px;
     font-size: medium;
     padding: 5px;
     background: orangered;
@@ -65,28 +71,24 @@ a:hover {
     color: #aa0303;
 }
 
-h3{
-    color:black;
-    margin: 0rem 6rem;
-}
-
-li{
-    color:black;
+li {
+    color: black;
     margin: 2px 6rem;
+    font-size: large;
 }
 
-#premium-text{
+#premium-text {
     text-align: right;
     margin-right: 8rem;
     color: #aa0303;
-    font-size:1.4rem;      
+    font-size: 1.4rem;
 }
 
-#premium-features{
+#premium-features {
     margin: 0rem 6rem;
     color: #aa0303;
-    font-size:1.4rem;  
-    margin-bottom : 1rem;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
 }
 
 #err {
@@ -95,6 +97,24 @@ li{
     color: #6b2424;
 }
 
-#expense-list{
-    margin-bottom : 1rem;
+#expense-list {
+    margin-bottom: 1rem;
+}
+
+.pagination {
+    display: flex;
+    width: max-content;
+    height: 25px;
+    margin: 0 5rem;
+    margin-bottom: 10px;
+}
+
+.pagination label {
+    font-family: sans-serif;
+    font-size: 18px;
+    margin: 4px 10px;
+}
+
+.pagination button {
+    margin: 0 10px;
 }
