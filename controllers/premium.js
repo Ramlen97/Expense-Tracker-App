@@ -14,7 +14,7 @@ const getLeaderboard = async (req, res) => {
     }
     catch (error) {
         console.log(error);
-        res.status(504).json({message:'Something went wrong',error:error});
+        res.status(504).json({message:'Something went wrong'});
     }
 }
 
@@ -35,12 +35,26 @@ const getDownloadExpenses = async (req, res) => {
         res.status(200).json({ fileURL, success: true });
     }
     catch (error) {
-        res.status(504).json({ fileURL: "", success: false, message: 'Something went wrong!', error: error });
+        res.status(504).json({ fileURL: "", success: false, message: 'Something went wrong!'});
+        console.log(error);
+    }
+}
+
+const getPreviousDownloads=async(req,res)=>{
+    try {
+        if(!req.user.isPremiumUser){
+            return res.status(401).json({message:'Unauthorized'});
+        }     
+        const  previousdownloads=await UserServices.getFiledownloads(req.user,{order:[['id',"DESC"]]});
+        res.status(200).json(previousdownloads);
+    } catch (error) {
+        res.status(504).json({success: false, message: 'Something went wrong!'});
         console.log(error);
     }
 }
 
 module.exports={
     getLeaderboard,
-    getDownloadExpenses
+    getDownloadExpenses,
+    getPreviousDownloads
 }

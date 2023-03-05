@@ -8,4 +8,6 @@ router.get('/leaderboard',userAuthentication,premiumControllers.getLeaderboard);
 
 router.get('/download',userAuthentication,premiumControllers.getDownloadExpenses);
 
+router.get('/previousdownloads',userAuthentication,premiumControllers.getPreviousDownloads)
+
 module.exports=router;

@@ -1,7 +1,8 @@
 var url = 'http://localhost:3000';
 
 let currentPage = 1;
-let rowsPerPage = localStorage.getItem('rowsPerPage')?  localStorage.getItem('rowsPerPage'):5;
+let rowsPerPage = localStorage.getItem('rowsPerPage') ? localStorage.getItem('rowsPerPage') : 5;
+let isLastExpense;
 
 function parseJwt(token) {
     var base64Url = token.split('.')[1];
@@ -21,7 +22,6 @@ function showErrorMessage(error) {
     }
 }
 
-
 function removeErrorMessage() {
     document.getElementById('err').textContent = "";
 }
@@ -29,23 +29,20 @@ function removeErrorMessage() {
 async function getExpenses() {
     try {
         const token = localStorage.getItem('token');
-        if (parseJwt(token).isPremium) {
-            showPremiumUserMessage();
-        }
         const response = await axios.get(`${url}/expense?page=${currentPage}&rows=${rowsPerPage}`, { headers: { "Authorization": token } });
-        document.getElementById('expense-list').innerHTML = "";
-        const { expenses, totalCount } = response.data;
+        const [expenses, totalCount] = response.data;
         pagination(totalCount);
+        document.getElementById('expense-list').innerHTML = "";
         if (expenses.length > 0) {
-            for (let i = 0; i < expenses.length; i++) {
+            for (let i = expenses.length - 1; i >= 0; i--) {
                 showExpenseOnScreen(expenses[i]);
             }
         } else {
             document.getElementById('err').textContent = "Currently there are no Expenses!"
         }
     } catch (error) {
+        // console.log(error);
         showErrorMessage(error);
-        console.log(error);
     }
 }
 
@@ -54,11 +51,19 @@ function showExpenseOnScreen(exp) {
     const expense = `<li id="${exp.id}">${exp.amount}- ${exp.description}- ${exp.category}
             <button class="btn" onclick="deleteExpense('${exp.id}')">Delete</button>
             <button class="btn" onclick="editExpense('${exp.id}','${exp.amount}','${exp.description}','${exp.category}')">Edit</button></li>`;
-    list.innerHTML += expense;
-    // list.insertAdjacentHTML("afterbegin", expense);
+    // list.innerHTML += expense;
+    list.insertAdjacentHTML("afterbegin", expense);
 }
 
-document.addEventListener('DOMContentLoaded', getExpenses);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token');
+    if (parseJwt(token).isPremium) {
+        showPremiumUserMessage();
+    }
+    getExpenses();
+});
+
 document.addEventListener('click', removeErrorMessage);
 
 async function storeAndShowExpense(e) {
@@ -85,14 +90,13 @@ async function storeAndShowExpense(e) {
         } else {
             exp = await axios.post(`${url}/expense/update-expense`, expObj, { headers: { "Authorization": token } });
         }
-        showExpenseOnScreen(exp.data);
-
-        document.getElementById('amount').value = '';
-        document.getElementById('description').value = '';
+        await getExpenses();
+        e.target.amount.value = "";
+        e.target.description.value = "";
     }
     catch (error) {
+        // console.log(error);
         showErrorMessage(error);
-        console.log(error);
     }
 }
 
@@ -101,9 +105,13 @@ async function deleteExpense(id) {
     try {
         await axios.post(`${url}/expense/delete-expense/${id}`, null, { headers: { "Authorization": token } });
         document.getElementById(id).remove();
+        if (isLastExpense && currentPage > 1) {
+            currentPage--;
+            console.log(currentPage);
+        }
+        await getExpenses();
     } catch (error) {
         showErrorMessage(error);
-        console.log(error.response);
     }
 }
 
@@ -125,7 +133,7 @@ document.getElementById('rzp-button').onclick = async (e) => {
             key: response.data.key_id,
             order_id: response.data.order.id,
             handler: async (response) => {
-                console.log(response);
+                // console.log(response);
                 result = await axios.post(`${url}/purchase/updatetransaction`, {
                     status: "successful",
                     order_id: options.order_id,
@@ -143,7 +151,7 @@ document.getElementById('rzp-button').onclick = async (e) => {
         e.preventDefault();
 
         rzp1.on('payment.failed', (response) => {
-            console.log('payment failed', response.error.metadata.payment_id);
+            // console.log('payment failed', response.error.metadata.payment_id);
             alert('Something went wrong');
             axios.post(`${url}/purchase/updatetransaction`, {
                 status: "failed",
@@ -153,7 +161,6 @@ document.getElementById('rzp-button').onclick = async (e) => {
         });
     }
     catch (error) {
-        console.log(error);
         showErrorMessage(error);
     }
 }
@@ -163,30 +170,50 @@ function showPremiumUserMessage() {
     document.getElementById('premium-text').innerHTML += '<p>You are a Premium User</p>';
     document.getElementById('premium-features').innerHTML +=
         `<button id="download-expenses" onclick="downloadExpenses(event)">Download Expenses</button>
-    <button id="show-leaderboard" onclick="showLeaderboard(event)">Show Leaderboard</button>`;
+    <button id="show-leaderboard" onclick="showLeaderboard()">Show Leaderboard</button>`;
     document.getElementById('leaderboard').style.display = "block";
+    document.getElementById('previousdownload').style.display = "block";
     showLeaderboard();
+    showPreviousDownloads();
 }
 
-async function showLeaderboard(e) {
+async function showLeaderboard() {
     try {
         const token = localStorage.getItem('token');
-        const leaderboard = await axios.get(`${url}/premium/leaderboard`, { headers: { "Authorization": token } });
+        const response = await axios.get(`${url}/premium/leaderboard`, { headers: { "Authorization": token } });
         // console.log(leaderboard.data);
-        document.getElementById('leaderboard-list').innerHTML = "";
-        for (user of leaderboard.data) {
-            showUsersOnLeaderboard(user);
+        const leaderboard = document.getElementById('leaderboard-list');
+        leaderboard.innerHTML = "";
+        for (user of response.data) {
+            leaderboard.innerHTML += `<li>Name - ${user.name} ; Total Expense - ${user.totalExpense}</li>`;
         }
     }
     catch (error) {
-        console.log(error);
         showErrorMessage(error);
     }
 }
 
-function showUsersOnLeaderboard(user) {
-    const leaderboard = document.getElementById('leaderboard-list');
-    leaderboard.innerHTML += `<li>Name - ${user.name} ; Total Expense - ${user.totalExpense}</li>`;
+async function showPreviousDownloads() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${url}/premium/previousdownloads`, { headers: { "Authorization": token } });
+        // console.log(leaderboard.data);
+        const previousdownloads = document.getElementById('previousdownload-list');
+        previousdownloads.innerHTML = "";
+        for (download of response.data) {
+            previousdownloads.innerHTML += `<li onclick="downloadPreviousFile('${download.url}')">${download.createdAt}</li>`;
+        }
+    }
+    catch (error) {
+        showErrorMessage(error);
+    }
+}
+
+function downloadPreviousFile(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'myexpense.csv';
+    a.click();
 }
 
 async function downloadExpenses(e) {
@@ -199,7 +226,6 @@ async function downloadExpenses(e) {
         a.click();
     }
     catch (error) {
-        console.log(error);
         showErrorMessage(error)
     }
 }
@@ -208,16 +234,22 @@ function pagination(totalCount) {
     maxPages = Math.ceil(totalCount / rowsPerPage);
     document.getElementById('prev-btn').style.display = currentPage > 1 ? "block" : "none";
     document.getElementById('next-btn').style.display = maxPages > currentPage ? "block" : "none";
-    document.getElementById('rows-per-page').value=rowsPerPage;
-    const start = (currentPage - 1) * rowsPerPage + 1;
-    const temp=start + Number(rowsPerPage)-1;
-    const end = temp<totalCount? temp:totalCount;
-    document.getElementById('page-details').textContent = `Showing ${start}-${end} of ${totalCount}`;
+    document.getElementById('rows-per-page').value = rowsPerPage;
+    const previousPageCount = (currentPage - 1) * rowsPerPage;
+    const start = previousPageCount + 1;
+    const temp = previousPageCount + Number(rowsPerPage);
+    const end = temp < totalCount ? temp : totalCount;
+    if (totalCount > 0) {
+        document.getElementById('page-details').textContent = `Showing ${start}-${end} of ${totalCount}`;
+    } else {
+        document.getElementById('page-details').textContent = "";
+    }
+    isLastExpense = (start == totalCount) ? true : false;
 }
 
-function showChangedRows() {
+function updatedRows() {
     rowsPerPage = event.target.value;
-    localStorage.setItem('rowsPerPage',rowsPerPage);
+    localStorage.setItem('rowsPerPage', rowsPerPage);
     location.reload();
 }
 

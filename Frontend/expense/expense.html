@@ -42,14 +42,14 @@
 
     <div id="pagination" class="pagination">
         <label for="rows">Rows per page :</label>
-        <select id="rows-per-page"name="rows" onchange="showChangedRows()">
+        <select id="rows-per-page"name="rows" onchange="updatedRows()">
             <option value="5">5</option>
             <option value="10" >10</option>
             <option value="15">15</option>
             <option value="20">20</option>
             <option value="25">25</option>
         </select>
-        <label id="page-details">Showing 1-5 of 11</label>
+        <label id="page-details"></label>
         <button id="prev-btn" onclick="showPreviousPage()">prev</button>
         <button id="next-btn" onclick="showNextPage()">next</button>
     </div>
@@ -59,6 +59,9 @@
 
     <h3 id="leaderboard" style="display:none">Leader Board</h3>
     <ul id="leaderboard-list"></ul>
+
+    <h3 id="previousdownload" style="display:none">Previous Downloads</h3>
+    <ul id="previousdownload-list"></ul>
     
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>

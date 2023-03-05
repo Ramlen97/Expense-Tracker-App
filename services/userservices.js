@@ -44,6 +44,10 @@ const createFiledownload=(user,details,t)=>{
     return user.createFiledownload(details,t);
 }
 
+const getFiledownloads=(user,where)=>{
+    return user.getFiledownloads(where);
+}
+
 module.exports={
     getAllUsers,
     getUser,
@@ -55,5 +59,6 @@ module.exports={
     updateUser,
     createOrder,
     createForgotpassword,
-    createFiledownload
+    createFiledownload,
+    getFiledownloads
 }
