@@ -4,15 +4,14 @@ const ExpenseServices = require('../services/expenseservices');
 
 const getExpenses = async (req, res) => {
     try {
-        const totalCount=await UserServices.countExpenses(req.user);
         const { page, rows } = req.query;
         offset = (page-1)*rows
         limit = rows * 1;
-        const expenses = await UserServices.getExpenses(req.user, { offset, limit });
-        res.status(200).json({expenses,totalCount});
+        const response= await Promise.all([UserServices.getExpenses(req.user, {order:[['id','DESC']], offset, limit }),UserServices.countExpenses(req.user)])
+        res.status(200).json(response);
     }
     catch (error) {
-        res.status(504).json({ message: 'Something went wrong!', error: error });
+        res.status(504).json({ message: 'Something went wrong!' });
         console.log(error);
     }
 }
@@ -32,9 +31,8 @@ const postAddExpense = async (req, res) => {
             res.status(201).json(response[0]);
         })
 
-
     } catch (error) {
-        res.status(504).json({ message: 'Something went wrong!', error: error });
+        res.status(504).json({ message: 'Something went wrong!'});
         console.log(error);
     }
 }
@@ -57,7 +55,7 @@ const postUpdateExpense = async (req, res) => {
             console.log('expense updated');
         })
     } catch (error) {
-        res.status(504).json({ message: 'Something went wrong!', error: error });
+        res.status(504).json({ message: 'Something went wrong!'});
         console.log(error);
     }
 }
@@ -79,7 +77,7 @@ const postdeleteExpense = async (req, res) => {
             console.log('expense deleted');
         })
     } catch (error) {
-        res.status(504).json({ message: 'Something went wrong!', error: error });
+        res.status(504).json({ message: 'Something went wrong!' });
         console.log(error);
     }
 }
