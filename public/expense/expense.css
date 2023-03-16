@@ -1,0 +1,110 @@
+* {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: hwb(182 58% 11%);
+}
+
+h1 {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 5px;
+    color: hwb(182 58% 11%);
+    background: hsl(0, 27%, 15%)
+}
+
+h3 {
+    font-family: sans-serif;
+    color: black;
+    margin-left: 10px;
+}
+
+form {
+    font-family: sans-serif;
+    border: orange 2px solid;
+    border-radius: 25px;
+    width: max-content;
+    background: ghostwhite;
+    padding: 15px;
+}
+
+ul{
+    margin-bottom: 1rem;
+}
+
+li {
+    color: black;
+    font-size: large;
+    margin-top: 1px;
+}
+
+label {
+    font-size: large;
+}
+
+input {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: ridge;
+}
+
+button {
+    font-size: medium;
+    padding: 3px;
+    background: orangered;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    margin-right: 2px;    
+}
+
+button:hover {
+    background-color: #aa0303;
+}
+
+#premium-text {
+    text-align: right;
+    color: #aa0303;
+    font-size: 1.4rem;
+}
+
+#premium-features {
+    color: #aa0303;
+    margin-bottom: 1rem;
+    margin-left: 10px;
+}
+
+#err {
+    font-family: sans-serif;
+    text-align: center;
+    color: #6b2424;
+}
+
+#previousdownload-list li:hover{
+    color:orangered;
+    text-decoration: underline;
+    cursor:pointer;
+}
+
+.pagination {
+    display: flex;
+    width: max-content;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.pagination label {
+    font-family: sans-serif;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.form1{
+    justify-content: center;
+    display:flex;
+}
