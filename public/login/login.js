@@ -4,21 +4,22 @@ function showErrorMessage(error) {
     } else {
         document.body.innerHTML += `<h4 id="err">Something went wrong!</h4>`;
     }
+    removeErrorMessage()
+}
+
+function removeErrorMessage() {
+    document.addEventListener('click', () => document.getElementById('err').textContent = "", { once: true });
 }
 
 async function login(e) {
     e.preventDefault();
-    const error = document.getElementById('err');
-    if (error) {
-        error.remove();
-    }
     const loginDetails = {
         email: e.target.email.value,
         password: e.target.password.value
     }
     // console.log(loginDetails);
     try {
-        const response = await axios.post('http://localhost:3000/user/login', loginDetails);
+        const response = await axios.post(`/user/login`, loginDetails);
         if (response.status === 200) {
             alert(response.data.message);
             localStorage.setItem('token', response.data.token);
@@ -33,16 +34,12 @@ async function login(e) {
 
 async function forgotPassword(e) {
     e.preventDefault();
-    const error = document.getElementById('err');
-    if (error) {
-        error.remove();
-    }
     const forgotEmail = {
         email: e.target.email.value
     }
 
     try {
-        const response = await axios.post('http://localhost:3000/password/forgotpassword', forgotEmail);
+        const response = await axios.post('/password/forgotpassword', forgotEmail);
         alert(response.data.message);
     } catch (error) {
         console.log(error);

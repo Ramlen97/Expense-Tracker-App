@@ -1,5 +1,3 @@
-var url = 'http://localhost:3000';
-
 let currentPage = 1;
 let rowsPerPage = localStorage.getItem('rowsPerPage') ? localStorage.getItem('rowsPerPage') : 5;
 let totalCount = 0;
@@ -32,7 +30,7 @@ function removeErrorMessage() {
 async function getExpenses() {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${url}/expense?page=${currentPage}&rows=${rowsPerPage}`, { headers: { "Authorization": token } });
+        const response = await axios.get(`/expense?page=${currentPage}&rows=${rowsPerPage}`, { headers: { "Authorization": token } });
         const [expenses, count] = response.data;
         totalCount = count;
         pagination();
@@ -89,11 +87,11 @@ async function storeAndShowExpense(e) {
     try {
         let exp;
         if (id === "null") {
-            exp = await axios.post(`${url}/expense/add-expense`, expObj, { headers: { "Authorization": token } });
+            exp = await axios.post(`/expense/add-expense`, expObj, { headers: { "Authorization": token } });
             currentPage == 1
             await getExpenses();
         } else {
-            exp = await axios.post(`${url}/expense/update-expense`, expObj, { headers: { "Authorization": token } });
+            exp = await axios.post(`/expense/update-expense`, expObj, { headers: { "Authorization": token } });
             document.getElementById(id).innerHTML = `<li id="${id}">${amount}- ${description}- ${category}
             <button  onclick="deleteExpense('${id}')">Delete</button>
             <button  onclick="editExpense('${id}','${amount}','${description}','${category}')">Edit</button></li>`
@@ -111,7 +109,7 @@ async function storeAndShowExpense(e) {
 async function deleteExpense(id) {
     const token = localStorage.getItem('token');
     try {
-        await axios.post(`${url}/expense/delete-expense/${id}`, null, { headers: { "Authorization": token } });
+        await axios.post(`/expense/delete-expense/${id}`, null, { headers: { "Authorization": token } });
         document.getElementById(id).remove();
         if (isLastExpenseOnScreen && currentPage > 1) {
             currentPage--;
@@ -133,14 +131,14 @@ function editExpense(id, amount, description, category) {
 document.getElementById('rzp-button').onclick = async (e) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${url}/purchase/premiummembership`, { headers: { "Authorization": token } });
+        const response = await axios.get(`/purchase/premiummembership`, { headers: { "Authorization": token } });
         // console.log(response);
         const options = {
             key: response.data.key_id,
             order_id: response.data.order.id,
             handler: async (response) => {
                 // console.log(response);
-                result = await axios.post(`${url}/purchase/updatetransaction`, {
+                result = await axios.post(`/purchase/updatetransaction`, {
                     status: "successful",
                     order_id: options.order_id,
                     payment_id: response.razorpay_payment_id
@@ -159,7 +157,7 @@ document.getElementById('rzp-button').onclick = async (e) => {
         rzp1.on('payment.failed', (response) => {
             // console.log('payment failed', response.error.metadata.payment_id);
             alert('Something went wrong');
-            axios.post(`${url}/purchase/updatetransaction`, {
+            axios.post(`/purchase/updatetransaction`, {
                 status: "failed",
                 order_id: response.error.metadata.order_id,
                 payment_id: response.error.metadata.payment_id
@@ -186,7 +184,7 @@ function showPremiumUserMessage() {
 async function showLeaderboard() {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${url}/premium/leaderboard`, { headers: { "Authorization": token } });
+        const response = await axios.get(`/premium/leaderboard`, { headers: { "Authorization": token } });
         // console.log(leaderboard.data);
         const leaderboard = document.getElementById('leaderboard-list');
         leaderboard.innerHTML = "";
@@ -202,7 +200,7 @@ async function showLeaderboard() {
 async function showPreviousDownloads() {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${url}/premium/previousdownloads`, { headers: { "Authorization": token } });
+        const response = await axios.get(`/premium/previousdownloads`, { headers: { "Authorization": token } });
         // console.log(leaderboard.data);
         const previousdownloads = document.getElementById('previousdownload-list');
         previousdownloads.innerHTML = "";
@@ -225,7 +223,7 @@ function downloadPreviousFile(url) {
 async function downloadExpenses(e) {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${url}/premium/download`, { headers: { "Authorization": token } });
+        const response = await axios.get(`/premium/download`, { headers: { "Authorization": token } });
         const a = document.createElement('a');
         a.href = response.data.fileURL;
         a.download = 'myexpense.csv';
