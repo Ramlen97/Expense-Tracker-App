@@ -19,11 +19,10 @@ const resetpasswordEmail = (user, id) => {
         sender,
         to: receivers,
         subject: 'Reset password',
-        textContent: `Please Click on the link to reset your password`,
         htmlContent: `
-        <h2>Hello {{params.name}},</h2>
-        <p>Please click on the below link to reset your password.</p>
-        <a href="http://localhost:3000/password/resetpassword/${id}">Reset your password</a>`,
+        <h4>Hello {{params.name}},</h4>
+        <p>Please click on the below link to reset your password. This link will expire in 1 hour.</p>
+        <a href="http://${process.env.IP}:${process.env.PORT}/password/resetpassword/${id}">Reset your password</a>`,
         params: {
             name: user.name
         }

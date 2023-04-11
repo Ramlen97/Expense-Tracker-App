@@ -37,8 +37,8 @@ const postUserLogin = async (req, res) => {
             return res.status(404).json({message:'Sorry! User not found'});
         }
         bcrypt.compare(password, user.password, (err, result) => {
-            if (err) {
-                throw new Error('Something went wrong');
+            if(err){
+                throw new Error();
             }
             if (result) {
                 res.status(200).json({message:'User login successfully',token:JwtServices.generateToken(user.id,user.name,user.isPremiumUser)});
@@ -48,7 +48,7 @@ const postUserLogin = async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.status(500).json({message:'Something went wrong. Please try again!',error:error});
+        res.status(500).json({message:'Something went wrong. Please try again!'});
     }
 }
 

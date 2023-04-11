@@ -7,7 +7,7 @@ const authenticate = async (req, res, next) => {
         // console.log(token);
         const userObj = JwtServices.verify(token, process.env.TOKEN_SECRET); //Decrypt userId with secret key
         const user = await UserServices.UserByPk(userObj.userId);
-        console.log('User authenticated');
+        // console.log('User authenticated');
         req.user = user;
         next();
     } catch (error) {

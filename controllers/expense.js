@@ -1,13 +1,19 @@
 const sequelize = require('../util/database');
+const Sequelize=require('sequelize');
 const UserServices = require('../services/userservices');
 const ExpenseServices = require('../services/expenseservices');
 
 const getExpenses = async (req, res) => {
     try {
-        const { page, rows } = req.query;
+        const { page, rows,startDate,endDate } = req.query;
         offset = (page-1)*rows
         limit = rows * 1;
-        const response= await Promise.all([UserServices.getExpenses(req.user, {order:[['id','DESC']], offset, limit }),UserServices.countExpenses(req.user)])
+        const response= await Promise.all([
+            UserServices.getExpenses(req.user, {where:{createdAt:{[Sequelize.Op.between]:[startDate,endDate]}},order:[['id','DESC']], offset, limit }),
+            UserServices.getExpenses(req.user,
+                {where:{createdAt:{[Sequelize.Op.between]:[startDate,endDate]}},
+                attributes: [[sequelize.fn('count', sequelize.col('id')), 'count'],[sequelize.fn('sum', sequelize.col('amount')), 'total']]})
+        ]);
         res.status(200).json(response);
     }
     catch (error) {

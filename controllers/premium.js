@@ -1,15 +1,17 @@
 const UserServices = require('../services/userservices');
 const S3Services = require('../services/S3services');
+const Sequelize=require('sequelize');
 
 const getLeaderboard = async (req, res) => {
     try {
         if(!req.user.isPremiumUser){
-            return res.status(401).json({message:'Unauthorized'});
+            return res.status(401).json({message:'User not authorized'});
         }
         const leaderboard = await UserServices.getAllUsers({
-            attributes:['id','name','totalExpense'],        
+            attributes:['id','name','totalExpense'],
+            order:[['totalExpense','DESC']],
+            limit:10        
         })
-        leaderboard.sort((a,b)=>b.totalExpense-a.totalExpense);
         res.status(200).json(leaderboard);
     }
     catch (error) {
@@ -21,9 +23,10 @@ const getLeaderboard = async (req, res) => {
 const getDownloadExpenses = async (req, res) => {
     try {
         if(!req.user.isPremiumUser){
-            return res.status(401).json({message:'Unauthorized'});
-        }        
-        const expenses = await UserServices.getExpenses(req.user);
+            return res.status(401).json({message:'User not authorized'});
+        }
+        const { startDate,endDate } = req.query;   
+        const expenses = await UserServices.getExpenses(req.user,{where:{createdAt:{[Sequelize.Op.between]:[startDate,endDate]}},order:[['id','DESC']]});
         const stringifiedExpenses = JSON.stringify(expenses);
         // console.log(stringifiedExpenses);
 

@@ -15,7 +15,7 @@ const getPremiumMembership = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(403).json({ message: 'Something went wrong!', error: error });
+        res.status(403).json({ message: 'Something went wrong!' });
     }
 }
 
@@ -40,7 +40,7 @@ const postUpdateTransaction = async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({ message: 'Something went wrong!', error: error });
+        res.status(500).json({ message: 'Something went wrong!' });
         console.log(error);
     }
 
