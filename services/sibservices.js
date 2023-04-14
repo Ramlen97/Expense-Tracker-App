@@ -22,7 +22,7 @@ const resetpasswordEmail = (user, id) => {
         htmlContent: `
         <h4>Hello {{params.name}},</h4>
         <p>Please click on the below link to reset your password. This link will expire in 1 hour.</p>
-        <a href="http://${process.env.IP}:${process.env.PORT}/password/resetpassword/${id}">Reset your password</a>`,
+        <a href="http://${process.env.IP}/password/resetpassword/${id}">Reset your password</a>`,
         params: {
             name: user.name
         }

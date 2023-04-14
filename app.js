@@ -34,7 +34,7 @@ app.use('/purchase', purchaseRoutes);
 app.use('/premium', premiumRoutes);
 app.use('/password', resetPasswordRoutes);
 app.use((req, res) => {
-    console.log(req.url);
+    console.log('url=>',req.url);
     if(req.url==="/"){
         return res.redirect('login/login.html');
     }
