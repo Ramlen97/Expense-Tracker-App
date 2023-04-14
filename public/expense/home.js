@@ -134,10 +134,10 @@ document.getElementById('logout').onclick = () => {
 
 async function storeAndShowExpense(e) {
     e.preventDefault();
-    const id = e.target.id.value
-    const amount = e.target.amount.value
-    const description = e.target.description.value
-    const category = e.target.category.value
+    const id = e.target.id.value;
+    const amount = e.target.amount.value;
+    const description = e.target.description.value;
+    const category = e.target.category.value;
     if (!amount || !description || !category) {
         document.getElementById('err').textContent = "Please fill all the fields to add an expense!";
         removeErrorMessage();
@@ -171,6 +171,7 @@ async function storeAndShowExpense(e) {
         } else {
             document.getElementById('submit-btn').textContent = "Add Expense";
             document.getElementById(id).lastElementChild.style.display = "block";
+            
 
             const exp = await axios.post(`/expense/update-expense`, expObj, { headers: { "Authorization": token } });
 
@@ -184,6 +185,7 @@ async function storeAndShowExpense(e) {
 
         e.target.amount.value = "";
         e.target.description.value = "";
+        e.target.id.value="null";
     }
     catch (error) {
         showErrorMessage(error);
