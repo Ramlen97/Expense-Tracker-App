@@ -171,7 +171,7 @@ async function storeAndShowExpense(e) {
         } else {
             document.getElementById('submit-btn').textContent = "Add Expense";
             document.getElementById(id).lastElementChild.style.display = "block";
-            
+            e.target.id.value = "null";
 
             const exp = await axios.post(`/expense/update-expense`, expObj, { headers: { "Authorization": token } });
 
@@ -185,7 +185,6 @@ async function storeAndShowExpense(e) {
 
         e.target.amount.value = "";
         e.target.description.value = "";
-        e.target.id.value="null";
     }
     catch (error) {
         showErrorMessage(error);
